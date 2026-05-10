@@ -8,6 +8,7 @@ import {
   truncateAddress,
   TRUST_TIER_INFO,
   type Agent,
+  type Market,
   type Trend,
   type TrustTier,
 } from "@/lib/agents";
@@ -173,7 +174,33 @@ function AgentCard({ a }: { a: Agent }) {
   );
 }
 
-export default function AgentRegistryPage() {
+type MarketTab = "all" | Market;
+
+const MARKET_TABS: { key: MarketTab; label: string }[] = [
+  { key: "all", label: "All" },
+  { key: "spot", label: "Spot" },
+  { key: "perp", label: "Futures" },
+];
+
+export default async function AgentRegistryPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ market?: string }>;
+}) {
+  const sp = await searchParams;
+  const marketTab: MarketTab = (["all", "spot", "perp"] as const).includes(
+    (sp.market ?? "all") as MarketTab
+  )
+    ? ((sp.market ?? "all") as MarketTab)
+    : "all";
+
+  const filtered = agents.filter((a) => marketTab === "all" || a.market === marketTab);
+  const counts = {
+    all: agents.length,
+    spot: agents.filter((a) => a.market === "spot").length,
+    perp: agents.filter((a) => a.market === "perp").length,
+  };
+
   return (
     <div className="min-h-screen w-full bg-zinc-950 text-zinc-100">
       <div className="mx-auto w-full max-w-7xl px-6 py-8">
@@ -187,26 +214,33 @@ export default function AgentRegistryPage() {
           </div>
           <div className="flex items-center gap-2 text-xs text-zinc-400">
             <span className="rounded-md border border-zinc-800 bg-zinc-900 px-2 py-1">Network: 0G Galileo Testnet</span>
-            <span className="rounded-md border border-zinc-800 bg-zinc-900 px-2 py-1">{agents.length} agents</span>
+            <span className="rounded-md border border-zinc-800 bg-zinc-900 px-2 py-1">{filtered.length} agents</span>
           </div>
         </div>
 
         <div className="mt-6 flex items-center gap-6 border-b border-zinc-900 text-sm">
-          <button className="relative pb-3 font-semibold text-zinc-100">
-            All Agents
-            <span className="absolute inset-x-0 -bottom-px h-0.5 rounded-full bg-yellow-400" />
-          </button>
-          <button className="pb-3 text-zinc-400 hover:text-zinc-200">My Mints</button>
-          <button className="pb-3 text-zinc-400 hover:text-zinc-200">Watchlist</button>
+          {MARKET_TABS.map((tab) => {
+            const active = tab.key === marketTab;
+            const href = tab.key === "all" ? "/" : `/?market=${tab.key}`;
+            return (
+              <Link
+                key={tab.key}
+                href={href}
+                scroll={false}
+                className={`relative pb-3 ${active ? "font-semibold text-zinc-100" : "text-zinc-400 hover:text-zinc-200"}`}
+              >
+                {tab.label}
+                <span className="ml-1.5 text-xs text-zinc-500">{counts[tab.key]}</span>
+                {active && <span className="absolute inset-x-0 -bottom-px h-0.5 rounded-full bg-yellow-400" />}
+              </Link>
+            );
+          })}
         </div>
 
         <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
           <div className="flex flex-wrap items-center gap-2">
             <button className="inline-flex items-center gap-1.5 rounded-lg border border-zinc-800 bg-zinc-900 px-3 py-1.5 text-xs text-zinc-200 hover:border-zinc-700">
               All Tiers <ChevronDown />
-            </button>
-            <button className="inline-flex items-center gap-1.5 rounded-lg border border-zinc-800 bg-zinc-900 px-3 py-1.5 text-xs text-zinc-200 hover:border-zinc-700">
-              All Markets <ChevronDown />
             </button>
             <button className="inline-flex items-center gap-1.5 rounded-lg border border-zinc-800 bg-zinc-900 px-3 py-1.5 text-xs text-zinc-200 hover:border-zinc-700">
               30 Days <ChevronDown />
@@ -237,11 +271,19 @@ export default function AgentRegistryPage() {
           </div>
         </div>
 
-        <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {agents.map((a) => (
-            <AgentCard key={a.slug} a={a} />
-          ))}
-        </div>
+        {filtered.length === 0 ? (
+          <div className="mt-12 rounded-2xl border border-zinc-800/80 bg-zinc-900/40 p-12 text-center">
+            <p className="text-sm text-zinc-400">
+              No {marketTab === "perp" ? "Futures" : "Spot"} agents yet.
+            </p>
+          </div>
+        ) : (
+          <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {filtered.map((a) => (
+              <AgentCard key={a.slug} a={a} />
+            ))}
+          </div>
+        )}
 
         <p className="mt-8 text-[11px] text-zinc-500">
           Demo data on 0G Galileo testnet. Trust tier T1 = on-chain commitment, T2 = owner-shared

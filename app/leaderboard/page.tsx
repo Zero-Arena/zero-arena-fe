@@ -8,8 +8,17 @@ import {
   truncateAddress,
   TRUST_TIER_INFO,
   type Agent,
+  type Market,
   type TrustTier,
 } from "@/lib/agents";
+
+type MarketTab = "all" | Market;
+
+const MARKET_TABS: { key: MarketTab; label: string }[] = [
+  { key: "all", label: "All" },
+  { key: "spot", label: "Spot" },
+  { key: "perp", label: "Futures" },
+];
 
 type Metric = "totalReturn" | "sharpe" | "winRate" | "drawdown" | "mints";
 
@@ -176,7 +185,7 @@ function PodiumCard({
 export default async function LeaderboardPage({
   searchParams,
 }: {
-  searchParams: Promise<{ metric?: string; tier?: string }>;
+  searchParams: Promise<{ metric?: string; tier?: string; market?: string }>;
 }) {
   const sp = await searchParams;
   const validMetrics = METRICS.map((m) => m.key);
@@ -190,8 +199,16 @@ export default async function LeaderboardPage({
     ? ((sp.tier ?? "all") as "all" | TrustTier)
     : "all";
 
+  const marketTab: MarketTab = (["all", "spot", "perp"] as const).includes(
+    (sp.market ?? "all") as MarketTab
+  )
+    ? ((sp.market ?? "all") as MarketTab)
+    : "all";
+
   const filtered = agents.filter(
-    (a) => tierFilter === "all" || a.trustTier === tierFilter
+    (a) =>
+      (tierFilter === "all" || a.trustTier === tierFilter) &&
+      (marketTab === "all" || a.market === marketTab)
   );
   const ranked = [...filtered].sort(
     (a, b) => getMetricValue(b, metric) - getMetricValue(a, metric)
@@ -216,12 +233,18 @@ export default async function LeaderboardPage({
     },
   };
 
-  const buildHref = (params: { metric?: Metric; tier?: "all" | TrustTier }) => {
+  const buildHref = (params: {
+    metric?: Metric;
+    tier?: "all" | TrustTier;
+    market?: MarketTab;
+  }) => {
     const m = params.metric ?? metric;
     const tr = params.tier ?? tierFilter;
+    const mk = params.market ?? marketTab;
     const qs = new URLSearchParams();
     if (m !== "totalReturn") qs.set("metric", m);
     if (tr !== "all") qs.set("tier", tr);
+    if (mk !== "all") qs.set("market", mk);
     const s = qs.toString();
     return s ? `/leaderboard?${s}` : "/leaderboard";
   };
@@ -266,7 +289,28 @@ export default async function LeaderboardPage({
           </div>
         </div>
 
-        <div className="mt-5 flex flex-wrap items-center gap-2">
+        <div className="mt-6 flex items-center gap-6 border-b border-zinc-900 text-sm">
+          {MARKET_TABS.map((tab) => {
+            const active = tab.key === marketTab;
+            const count = agents.filter(
+              (a) => tab.key === "all" || a.market === tab.key
+            ).length;
+            return (
+              <Link
+                key={tab.key}
+                href={buildHref({ market: tab.key })}
+                scroll={false}
+                className={`relative pb-3 ${active ? "font-semibold text-zinc-100" : "text-zinc-400 hover:text-zinc-200"}`}
+              >
+                {tab.label}
+                <span className="ml-1.5 text-xs text-zinc-500">{count}</span>
+                {active && <span className="absolute inset-x-0 -bottom-px h-0.5 rounded-full bg-yellow-400" />}
+              </Link>
+            );
+          })}
+        </div>
+
+        <div className="mt-4 flex flex-wrap items-center gap-2">
           <span className="text-xs text-zinc-500">Sort by:</span>
           {METRICS.map((m) => {
             const active = m.key === metric;

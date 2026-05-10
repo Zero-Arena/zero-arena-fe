@@ -286,7 +286,7 @@ export default async function AgentDetailPage({
               <span className="text-xs text-zinc-500">deterministic</span>
             </div>
             <div className="mt-4 space-y-2.5">
-              <StatRow label="Market" value={a.market === "perp" ? "Perpetual Futures" : "Spot"} />
+              <StatRow label="Market" value={a.market === "perp" ? "Futures (perpetual)" : "Spot"} />
               <StatRow label="Asset" value={`${a.asset}/USDT`} />
               {a.market === "perp" && (
                 <StatRow

@@ -76,7 +76,7 @@ export const TRUST_TIER_INFO: Record<
 
 export const MARKET_INFO: Record<Market, { label: string }> = {
   spot: { label: "Spot" },
-  perp: { label: "Perp" },
+  perp: { label: "Futures" },
 };
 
 export const agents: Agent[] = [
@@ -330,5 +330,5 @@ export const truncateAddress = (addr: string) => truncateHash(addr, 6, 4);
 
 export const marketLabel = (a: Agent) =>
   a.market === "perp"
-    ? `${a.asset}/USDT Perp ${a.leverage ?? 1}x`
+    ? `${a.asset}/USDT Futures ${a.leverage ?? 1}x`
     : `${a.asset}/USDT Spot`;
