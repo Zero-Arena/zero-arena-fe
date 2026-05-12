@@ -1,7 +1,7 @@
 import Link from "next/link";
 import {
-  agents,
   bpsToPct,
+  fetchAgents,
   fmtPctSigned,
   fmtPctUnsigned,
   marketLabel,
@@ -11,6 +11,8 @@ import {
   type Market,
   type TrustTier,
 } from "@/lib/agents";
+
+export const revalidate = 60;
 
 type MarketTab = "all" | Market;
 
@@ -205,6 +207,7 @@ export default async function LeaderboardPage({
     ? ((sp.market ?? "all") as MarketTab)
     : "all";
 
+  const { agents, source } = await fetchAgents();
   const filtered = agents.filter(
     (a) =>
       (tierFilter === "all" || a.trustTier === tierFilter) &&
@@ -269,6 +272,22 @@ export default async function LeaderboardPage({
             </p>
           </div>
           <div className="flex items-center gap-2">
+            {source === "chain" ? (
+              <span
+                title="Reading live AgentCertificate state from Galileo RPC."
+                className="inline-flex items-center gap-1.5 rounded-md border border-emerald-500/40 bg-emerald-500/10 px-2 py-1 text-xs text-emerald-300"
+              >
+                <span className="size-1.5 animate-pulse rounded-full bg-emerald-400" />
+                Galileo live
+              </span>
+            ) : (
+              <span
+                title="RPC unreachable or no on-chain certificates yet — showing placeholder data."
+                className="inline-flex items-center gap-1.5 rounded-md border border-amber-500/40 bg-amber-500/10 px-2 py-1 text-xs text-amber-300"
+              >
+                Demo data
+              </span>
+            )}
             {TIER_FILTERS.map((f) => {
               const active = f.key === tierFilter;
               return (

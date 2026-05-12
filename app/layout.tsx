@@ -3,6 +3,7 @@ import Link from "next/link";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Nav from "./_components/Nav";
+import Providers from "./providers";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -41,7 +42,9 @@ export default function RootLayout({
             <Nav />
           </div>
         </header>
-        <main className="flex-1 my-10">{children}</main>
+        <main className="flex-1 my-10">
+          <Providers>{children}</Providers>
+        </main>
         <footer className="border-t border-zinc-900 bg-zinc-950/90 backdrop-blur fixed bottom-0 z-50 w-full">
           <div className="mx-auto flex w-full max-w-7xl items-center gap-8 px-6 py-3 text-sm">
             <p className="text-[11px] text-zinc-500">

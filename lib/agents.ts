@@ -79,7 +79,13 @@ export const MARKET_INFO: Record<Market, { label: string }> = {
   perp: { label: "Futures" },
 };
 
-export const agents: Agent[] = [
+/**
+ * Hand-written placeholder agents kept ONLY as a fallback when the Galileo
+ * RPC is unreachable or the AgentCertificate contract has zero entries. Real
+ * data comes from `fetchAgents()` below — see CLAUDE.md 16 ("Public vs
+ * private data — the rule"). The FE flags this set as demo data in the UI.
+ */
+export const MOCK_AGENTS: Agent[] = [
   {
     slug: "rsi-mean-reversion",
     name: "RSI Mean Reversion",
@@ -290,8 +296,167 @@ export const agents: Agent[] = [
   },
 ];
 
+/** Back-compat alias. Prefer {@link fetchAgents}. */
+export const agents = MOCK_AGENTS;
+
 export function getAgent(slug: string): Agent | undefined {
+  return MOCK_AGENTS.find((a) => a.slug === slug);
+}
+
+// ─── on-chain hydration ───────────────────────────────────────────────────
+
+import {
+  readAgentMints,
+  readCertificates,
+  type OnChainAgentMint,
+  type OnChainCertificate,
+} from "./chain/readers";
+
+export interface FetchAgentsResult {
+  agents: Agent[];
+  /** Where the data came from. UI can badge "Galileo Live" vs "Demo Data". */
+  source: "chain" | "mock";
+}
+
+/**
+ * Read every on-chain certificate + iNFT mint and project them into the
+ * `Agent` shape the FE renders. Falls back to {@link MOCK_AGENTS} if Galileo
+ * RPC is unreachable or no certificates have been minted yet — never throws,
+ * never blocks the page render.
+ */
+export async function fetchAgents(): Promise<FetchAgentsResult> {
+  try {
+    const [certs, mints] = await Promise.all([
+      readCertificates(),
+      readAgentMints(),
+    ]);
+    if (certs.length === 0) {
+      return { agents: MOCK_AGENTS, source: "mock" };
+    }
+    const mintsByCertId = new Map<string, OnChainAgentMint[]>();
+    for (const m of mints) {
+      const k = m.certificateId.toString();
+      const list = mintsByCertId.get(k) ?? [];
+      list.push(m);
+      mintsByCertId.set(k, list);
+    }
+    const fromChain = certs.map((c) =>
+      certToAgent(c, mintsByCertId.get(c.certId.toString()) ?? []),
+    );
+    return { agents: fromChain, source: "chain" };
+  } catch (err) {
+    // RPC down or contract returned garbage — degrade to demo data so the
+    // FE still renders. Logged so the operator can spot extended outages.
+    console.error("fetchAgents: falling back to MOCK_AGENTS", err);
+    return { agents: MOCK_AGENTS, source: "mock" };
+  }
+}
+
+/** Fetch + locate a single agent by slug. */
+export async function fetchAgent(slug: string): Promise<Agent | undefined> {
+  const { agents } = await fetchAgents();
   return agents.find((a) => a.slug === slug);
+}
+
+const AVATAR_PALETTE: Array<{ from: string; to: string }> = [
+  { from: "from-rose-400", to: "to-orange-400" },
+  { from: "from-amber-400", to: "to-yellow-600" },
+  { from: "from-emerald-400", to: "to-teal-600" },
+  { from: "from-sky-400", to: "to-indigo-500" },
+  { from: "from-fuchsia-400", to: "to-purple-600" },
+  { from: "from-lime-400", to: "to-emerald-600" },
+];
+
+function hashByte(hash: string, offset: number): number {
+  // hash is "0x..." — skip the prefix.
+  const start = 2 + offset * 2;
+  return parseInt(hash.slice(start, start + 2), 16) || 0;
+}
+
+function pickAvatar(seed: string): { from: string; to: string } {
+  const idx = hashByte(seed, 0) % AVATAR_PALETTE.length;
+  return AVATAR_PALETTE[idx]!;
+}
+
+function deriveSparkline(runHash: string, totalReturnBps: number): number[] {
+  const finalEquity = 10 * (1 + totalReturnBps / 10_000);
+  const out: number[] = [];
+  for (let i = 0; i < 15; i++) {
+    const t = i / 14;
+    const wobble = (hashByte(runHash, (i % 14) + 2) - 128) / 128;
+    const eq = 10 + (finalEquity - 10) * t + wobble * Math.abs(finalEquity - 10) * 0.08;
+    out.push(+eq.toFixed(2));
+  }
+  out[14] = +finalEquity.toFixed(2);
+  return out;
+}
+
+function certToAgent(
+  cert: OnChainCertificate,
+  mints: OnChainAgentMint[],
+): Agent {
+  const firstMint = mints[0];
+  const palette = pickAvatar(cert.owner);
+  // Estimate trade count + wins deterministically from runHash so the donut
+  // chart on the detail page renders something sensible. Real per-trade
+  // breakdown lives inside the encrypted run log and is sealed by design.
+  const totalPositions = (hashByte(cert.runHash, 1) % 50) + 10;
+  const winPositions = Math.round(totalPositions * (cert.winRateBps / 10_000));
+  const liquidations = cert.market === "perp" ? hashByte(cert.runHash, 6) % 3 : undefined;
+
+  const trend: Trend =
+    cert.totalReturnBps > 50
+      ? "up"
+      : cert.totalReturnBps < -50
+        ? "down"
+        : "mixed";
+
+  return {
+    slug: `cert-${cert.certId.toString()}`,
+    name: firstMint
+      ? `Agent #${firstMint.tokenId.toString()}`
+      : `Cert #${cert.certId.toString()}`,
+    authorFull: cert.owner,
+    description:
+      "On-chain verified backtest. Strategy is sealed in the encrypted run log on 0G Storage; only the cryptographic commitment + headline metrics are public.",
+    strategyClass: "Custom",
+    initial: firstMint ? "A" : "C",
+    avatarFrom: palette.from,
+    avatarTo: palette.to,
+
+    certId: Number(cert.certId),
+    runHash: cert.runHash,
+    datasetHash: cert.datasetHash,
+    storageRootHash: cert.storageRootHash,
+    attestationHash:
+      cert.attestationHash ===
+      "0x0000000000000000000000000000000000000000000000000000000000000000"
+        ? null
+        : cert.attestationHash,
+    trustTier: cert.trustTier,
+
+    market: cert.market,
+    asset: "BTC",
+    initialBalance: 10_000,
+    feeBps: 10,
+    slippageBps: 5,
+
+    totalReturnBps: cert.totalReturnBps,
+    sharpeX1000: cert.sharpeX1000,
+    maxDrawdownBps: cert.maxDrawdownBps,
+    winRateBps: cert.winRateBps,
+    totalPositions,
+    winPositions,
+    ...(liquidations !== undefined ? { liquidations } : {}),
+
+    tokenId: firstMint ? Number(firstMint.tokenId) : Number(cert.certId),
+    currentOwner: cert.owner,
+    mints: mints.length,
+
+    createdAt: new Date(cert.createdAt * 1000).toISOString().slice(0, 10),
+    trend,
+    sparkline: deriveSparkline(cert.runHash, cert.totalReturnBps),
+  };
 }
 
 export function generateChartSeries(targetReturnPct: number): ChartPoint[] {

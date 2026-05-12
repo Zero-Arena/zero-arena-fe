@@ -2,11 +2,11 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import {
   bpsToPct,
+  fetchAgent,
   fmtMoney,
   fmtPctSigned,
   fmtPctUnsigned,
   generateChartSeries,
-  getAgent,
   marketLabel,
   truncateAddress,
   truncateHash,
@@ -14,7 +14,11 @@ import {
   type Agent,
   type TrustTier,
 } from "@/lib/agents";
+import { explorerUrl } from "@/lib/chain/galileo";
+import { CONTRACTS } from "@/lib/chain/contracts";
 import PerformanceChart from "./PerformanceChart";
+
+export const revalidate = 60;
 
 function ShieldIcon({ className }: { className: string }) {
   return (
@@ -131,7 +135,7 @@ export default async function AgentDetailPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const a: Agent | undefined = getAgent(slug);
+  const a: Agent | undefined = await fetchAgent(slug);
   if (!a) notFound();
 
   const totalReturn = bpsToPct(a.totalReturnBps);
@@ -167,7 +171,9 @@ export default async function AgentDetailPage({
               {a.mints} mints
             </button>
             <a
-              href="#"
+              href={explorerUrl("address", CONTRACTS.AgentCertificate)}
+              target="_blank"
+              rel="noreferrer"
               className="inline-flex items-center gap-1.5 rounded-lg border border-zinc-800 bg-zinc-900 px-2.5 py-1.5 text-xs hover:border-zinc-700"
             >
               <ExternalIcon /> 0G Explorer
@@ -273,7 +279,9 @@ export default async function AgentDetailPage({
               <StatRow label="Owner" value={truncateAddress(a.currentOwner)} valueClass="font-mono text-zinc-200" />
             </div>
             <a
-              href="#"
+              href={explorerUrl("address", CONTRACTS.AgentCertificate)}
+              target="_blank"
+              rel="noreferrer"
               className="mt-4 inline-flex items-center gap-1.5 rounded-lg border border-zinc-700 bg-zinc-950/40 px-3 py-1.5 text-xs text-zinc-200 hover:border-zinc-600"
             >
               <ExternalIcon className="size-3" /> View on 0G Galileo Explorer

@@ -1,7 +1,7 @@
 import Link from "next/link";
 import {
-  agents,
   bpsToPct,
+  fetchAgents,
   fmtPctSigned,
   fmtPctUnsigned,
   marketLabel,
@@ -12,6 +12,8 @@ import {
   type Trend,
   type TrustTier,
 } from "@/lib/agents";
+
+export const revalidate = 60; // refresh chain data once a minute
 
 function Sparkline({ series, trend }: { series: number[]; trend: Trend }) {
   const w = 120;
@@ -194,6 +196,7 @@ export default async function AgentRegistryPage({
     ? ((sp.market ?? "all") as MarketTab)
     : "all";
 
+  const { agents, source } = await fetchAgents();
   const filtered = agents.filter((a) => marketTab === "all" || a.market === marketTab);
   const counts = {
     all: agents.length,
@@ -214,6 +217,22 @@ export default async function AgentRegistryPage({
           </div>
           <div className="flex items-center gap-2 text-xs text-zinc-400">
             <span className="rounded-md border border-zinc-800 bg-zinc-900 px-2 py-1">Network: 0G Galileo Testnet</span>
+            {source === "chain" ? (
+              <span
+                title="Reading live AgentCertificate + ZeroArenaINFT state from Galileo RPC."
+                className="inline-flex items-center gap-1.5 rounded-md border border-emerald-500/40 bg-emerald-500/10 px-2 py-1 text-emerald-300"
+              >
+                <span className="size-1.5 animate-pulse rounded-full bg-emerald-400" />
+                Galileo live
+              </span>
+            ) : (
+              <span
+                title="RPC unreachable or no on-chain certificates yet — showing placeholder data."
+                className="inline-flex items-center gap-1.5 rounded-md border border-amber-500/40 bg-amber-500/10 px-2 py-1 text-amber-300"
+              >
+                Demo data
+              </span>
+            )}
             <span className="rounded-md border border-zinc-800 bg-zinc-900 px-2 py-1">{filtered.length} agents</span>
           </div>
         </div>
