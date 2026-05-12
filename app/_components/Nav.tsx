@@ -11,12 +11,17 @@ const links: {
   {
     href: "/",
     label: "Agents",
-    isActive: (p) => p === "/" || p.startsWith("/agent"),
+    isActive: (p) => p === "/" || (p.startsWith("/agent") && !p.includes("/live")),
   },
   {
     href: "/leaderboard",
     label: "Leaderboard",
     isActive: (p) => p.startsWith("/leaderboard"),
+  },
+  {
+    href: "/season",
+    label: "Seasons",
+    isActive: (p) => p.startsWith("/season") || p.includes("/live"),
   },
 ];
 
