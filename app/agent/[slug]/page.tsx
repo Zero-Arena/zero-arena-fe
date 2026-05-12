@@ -17,6 +17,7 @@ import {
 import { explorerUrl } from "@/lib/chain/galileo";
 import { CONTRACTS } from "@/lib/chain/contracts";
 import { findDataset, formatWindow } from "@/lib/chain/datasets";
+import CopyButton from "@/app/_components/CopyButton";
 import PerformanceChart from "./PerformanceChart";
 
 export const revalidate = 60;
@@ -91,6 +92,38 @@ function HashRow({
       ) : (
         body
       )}
+    </div>
+  );
+}
+
+function ReproducerStep({
+  n,
+  desc,
+  command,
+  commandClass,
+}: {
+  n: number;
+  desc: string;
+  command: string;
+  commandClass?: string;
+}) {
+  return (
+    <div className="mt-3">
+      <div className="flex items-center gap-2 text-[11px] text-zinc-500">
+        <span className="inline-flex size-4 items-center justify-center rounded bg-zinc-800 text-[10px] font-semibold text-zinc-300">
+          {n}
+        </span>
+        {desc}
+      </div>
+      <div className="mt-1.5 flex items-center gap-2 rounded-lg border border-zinc-800 bg-zinc-950 px-3 py-2">
+        <span className="text-zinc-600">$</span>
+        <code
+          className={`flex-1 break-all font-mono text-[11px] ${commandClass ?? "text-zinc-200"}`}
+        >
+          {command}
+        </code>
+        <CopyButton text={command} />
+      </div>
     </div>
   );
 }
@@ -426,6 +459,44 @@ export default async function AgentDetailPage({
             Strategy code never has to leave the owner&apos;s machine in plaintext to a verifier
             they trust. T3 (TEE attestation via 0G Compute Sealed Inference) lifts this to{" "}
             <em>trustless</em> verification — ships in v0.2 without an ABI change.
+          </p>
+        </div>
+
+        <div className="mt-4 rounded-2xl border border-zinc-800/80 bg-zinc-900/60 p-5">
+          <div className="flex items-center justify-between">
+            <div className="text-sm font-semibold text-zinc-100">Reproduce in your terminal</div>
+            <span className="rounded bg-zinc-800 px-1.5 py-0.5 text-[10px] font-medium text-zinc-300">
+              Verifier flow
+            </span>
+          </div>
+          <p className="mt-2 text-[11px] leading-5 text-zinc-500">
+            With the agent module + dataset CSV the owner shares, anyone with Node.js can
+            recompute the on-chain commitment. Copy each step.
+          </p>
+
+          <ReproducerStep
+            n={1}
+            desc="Install the SDK"
+            command="npm install zeroarena"
+          />
+          <ReproducerStep
+            n={2}
+            desc="Re-run the certified backtest"
+            command={`npx zeroarena verify ${a.certId} --agent ./agent.ts --csv ./btc.csv`}
+          />
+          <ReproducerStep
+            n={3}
+            desc="Expected output (this exact runHash):"
+            command={a.runHash}
+            commandClass="text-emerald-300"
+          />
+
+          <p className="mt-4 text-[11px] leading-5 text-zinc-500">
+            The <code className="rounded bg-zinc-800 px-1 py-0.5 font-mono text-[10px] text-zinc-300">verify</code> command
+            short-circuits early if{" "}
+            <code className="rounded bg-zinc-800 px-1 py-0.5 font-mono text-[10px] text-zinc-300">keccak256(csv bytes)</code>{" "}
+            doesn&apos;t match the on-chain datasetHash, so you cannot
+            accidentally certify-match on the wrong corpus. After publish: any third party with internet access can run this.
           </p>
         </div>
 
