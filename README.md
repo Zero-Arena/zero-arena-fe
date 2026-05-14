@@ -85,7 +85,7 @@ zero-arena-fe/
                        Galileo Testnet (chainId 16602)
                        ─────────────────────────────────
                        AgentCertificate   ZeroArenaINFT
-                       0x21a5…805c2f      0x4Bd4…06036f
+                       0x77f2…b087e       0xF716…700e
                               │                 │
                               │  view + events  │
                               ▼                 ▼

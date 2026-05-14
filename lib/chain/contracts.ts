@@ -1,19 +1,21 @@
-// Contract addresses + ABIs for Galileo testnet.
+// Contract addresses + ABIs for Galileo testnet (v0.2, deployed 2026-05-14).
 //
 // Addresses come from zero-arena-contracts/deployments/galileo-testnet.json
-// (verified contracts published 2026-05-10). ABIs are the minimal surface
-// the SDK actually calls — same shape as zero-arena-sdk/src/chain/abi.ts.
-//
-// When zero-arena-contracts publishes the @zero-arena/contracts npm package,
-// swap these inline strings for the imported artifact. Until then this
-// in-line copy is the single source of truth on the FE side.
+// and can be overridden at deploy time via NEXT_PUBLIC_* env vars. ABIs are
+// the minimal surface the FE reads.
 
 import { parseAbi } from "viem";
 
+const DEFAULTS = {
+  AgentCertificate:   "0x77f29d2a7BcAC679812d9a0FB1c7508eDA6B087e",
+  ZeroArenaINFT:      "0xF7162ecbdB11DE4704043D4aF93B4030AD61700e",
+  ReencryptionOracle: "0x733667CEBB27e310a8fb60799Af73A8C1fe501b2",
+} as const;
+
 export const CONTRACTS = {
-  AgentCertificate: "0x21a5DEA59cfA07B261d389A9554477e137805c2f" as const,
-  ZeroArenaINFT: "0x4Bd4d45f206861aa7cD4421785a316A1dD06036f" as const,
-  ReencryptionOracle: "0x63909dA30b0d65ad72b32b3C8C82515f7BFA6Fd6" as const,
+  AgentCertificate:   (process.env.NEXT_PUBLIC_AGENT_CERTIFICATE_ADDRESS   ?? DEFAULTS.AgentCertificate)   as `0x${string}`,
+  ZeroArenaINFT:      (process.env.NEXT_PUBLIC_ZERO_ARENA_INFT_ADDRESS     ?? DEFAULTS.ZeroArenaINFT)      as `0x${string}`,
+  ReencryptionOracle: (process.env.NEXT_PUBLIC_REENCRYPTION_ORACLE_ADDRESS ?? DEFAULTS.ReencryptionOracle) as `0x${string}`,
 } as const;
 
 // viem's `parseAbi` uses human-readable ABI per abitype — `tuple(...)` is not
