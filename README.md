@@ -28,7 +28,18 @@ pnpm install
 pnpm dev          # http://localhost:3000
 ```
 
-No environment variables required for v0.1 — Galileo RPC + contract addresses are baked into `lib/chain/`. If you fork to point at a different deployment, edit:
+Defaults work out of the box — `lib/chain/contracts.ts` ships hardcoded v0.2 Galileo addresses. To target a different deployment, drop a `.env.local`:
+
+```ini
+# zero-arena-fe/.env.local — see .env.example
+NEXT_PUBLIC_AGENT_CERTIFICATE_ADDRESS=0x…
+NEXT_PUBLIC_ZERO_ARENA_INFT_ADDRESS=0x…
+NEXT_PUBLIC_REENCRYPTION_ORACLE_ADDRESS=0x…
+NEXT_PUBLIC_LIVE_CERTIFICATE_ADDRESS=0x…
+NEXT_PUBLIC_SEASON_ADDRESS=0x…
+```
+
+Anything not set falls back to the hardcoded default. Other knobs:
 
 - `lib/chain/galileo.ts` — chain id, RPC URL, explorer, `DEPLOY_BLOCK`
 - `lib/chain/contracts.ts` — `CONTRACTS` map + ABIs
