@@ -352,10 +352,14 @@ export async function fetchAgents(): Promise<FetchAgentsResult> {
   }
 }
 
-/** Fetch + locate a single agent by slug. */
+/** Fetch + locate a single agent by slug. Falls back to MOCK_AGENTS when the
+ *  slug doesn't match any chain-derived cert — useful in demo-data mode
+ *  where /season references mock-only slugs like `rsi-mean-reversion`. */
 export async function fetchAgent(slug: string): Promise<Agent | undefined> {
   const { agents } = await fetchAgents();
-  return agents.find((a) => a.slug === slug);
+  const found = agents.find((a) => a.slug === slug);
+  if (found) return found;
+  return MOCK_AGENTS.find((a) => a.slug === slug);
 }
 
 const AVATAR_PALETTE: Array<{ from: string; to: string }> = [

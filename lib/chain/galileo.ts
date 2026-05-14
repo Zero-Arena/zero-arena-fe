@@ -22,8 +22,8 @@ export const galileo = defineChain({
   testnet: true,
 });
 
-/** Block the contracts were deployed at. Used as `fromBlock` when scanning logs. */
-export const DEPLOY_BLOCK = 32_563_974n;
+// Block the v0.2 contracts were deployed at. Used as `fromBlock` when scanning logs.
+export const DEPLOY_BLOCK = BigInt(33_200_264);
 
 /** Convenience: build a Galileo explorer URL for a tx hash or address. */
 export function explorerUrl(kind: "tx" | "address" | "token", value: string): string {
