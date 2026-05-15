@@ -18,6 +18,7 @@ import {
   statusFromByte,
 } from "./contracts";
 import { MOCK_AGENTS } from "../agents";
+import { lookupRoster } from "./roster-overlay";
 
 export interface LiveRun {
   tokenId: bigint;
@@ -176,11 +177,12 @@ export async function readSeasonLeaderboard(seasonId: bigint): Promise<SeasonLea
   if (participants.length === 0) return [];
   const runs = await Promise.all(participants.map((t) => readLiveRun(t)));
   const entries: SeasonLeaderboardEntry[] = participants.map((tokenId, i) => {
+    const overlay = lookupRoster(tokenId);
     const mock = MOCK_AGENTS.find((a) => BigInt(a.tokenId) === tokenId);
     return {
       tokenId,
-      slug: mock?.slug ?? `cert-${tokenId.toString()}`,
-      name: mock?.name ?? `Agent #${tokenId.toString()}`,
+      slug: overlay?.slug ?? mock?.slug ?? `cert-${tokenId.toString()}`,
+      name: overlay?.name ?? mock?.name ?? `Agent #${tokenId.toString()}`,
       run: runs[i] ?? null,
     };
   });

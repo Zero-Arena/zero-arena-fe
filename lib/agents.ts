@@ -1,3 +1,5 @@
+import { lookupRoster } from "./chain/roster-overlay";
+
 export type TrustTier = "T1" | "T2" | "T3";
 export type Market = "spot" | "perp";
 export type AssetSymbol = "BTC" | "0G";
@@ -340,9 +342,11 @@ export async function fetchAgents(): Promise<FetchAgentsResult> {
       list.push(m);
       mintsByCertId.set(k, list);
     }
-    const fromChain = certs.map((c) =>
-      certToAgent(c, mintsByCertId.get(c.certId.toString()) ?? []),
-    );
+    // Only surface certs that produced an iNFT — orphan certs (mint reverted)
+    // don't represent an ownable asset and would clutter the leaderboard.
+    const fromChain = certs
+      .filter((c) => (mintsByCertId.get(c.certId.toString()) ?? []).length > 0)
+      .map((c) => certToAgent(c, mintsByCertId.get(c.certId.toString()) ?? []));
     return { agents: fromChain, source: "chain" };
   } catch (err) {
     // RPC down or contract returned garbage — degrade to demo data so the
@@ -400,6 +404,7 @@ function certToAgent(
   mints: OnChainAgentMint[],
 ): Agent {
   const firstMint = mints[0];
+  const overlay = firstMint ? lookupRoster(firstMint.tokenId) : null;
   const palette = pickAvatar(cert.owner);
   // Estimate trade count + wins deterministically from runHash so the donut
   // chart on the detail page renders something sensible. Real per-trade
@@ -416,15 +421,17 @@ function certToAgent(
         : "mixed";
 
   return {
-    slug: `cert-${cert.certId.toString()}`,
-    name: firstMint
-      ? `Agent #${firstMint.tokenId.toString()}`
-      : `Cert #${cert.certId.toString()}`,
+    slug: overlay?.slug ?? `cert-${cert.certId.toString()}`,
+    name: overlay?.name
+      ?? (firstMint
+        ? `Agent #${firstMint.tokenId.toString()}`
+        : `Cert #${cert.certId.toString()}`),
     authorFull: cert.owner,
     description:
-      "On-chain verified backtest. Strategy is sealed in the encrypted run log on 0G Storage; only the cryptographic commitment + headline metrics are public.",
-    strategyClass: "Custom",
-    initial: firstMint ? "A" : "C",
+      overlay?.description
+      ?? "On-chain verified backtest. Strategy is sealed in the encrypted run log on 0G Storage; only the cryptographic commitment + headline metrics are public.",
+    strategyClass: overlay?.strategyClass ?? "Custom",
+    initial: overlay?.name?.[0] ?? (firstMint ? "A" : "C"),
     avatarFrom: palette.from,
     avatarTo: palette.to,
 
