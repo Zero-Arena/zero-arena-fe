@@ -90,6 +90,18 @@ Things that silently break the FE if the contracts side changes — keep a CI sm
 
 Production: [zero-arena-fe.vercel.app](https://zero-arena-fe.vercel.app). Vercel auto-deploys on every push to `main` on the source repo wired to Vercel. Env vars are optional — `lib/chain/contracts.ts` ships hardcoded v0.2 Galileo addresses that match production. `NEXT_PUBLIC_*` overrides only when targeting a different deployment.
 
+## v0.3 placeholders — operator badge on live cert
+
+Every live cert card needs to badge its operator type (see root [`CLAUDE.md`](https://github.com/Zero-Arena/zero-arena/blob/main/CLAUDE.md) "Trust model — Arena layer"):
+
+| Badge | Source of truth |
+| - | - |
+| `Owner-operated` | `LiveCertificate.authorizedUpdaters[tokenId][operator]` where `operator == iNFT.ownerOf(tokenId)` |
+| `Operator: Zero Arena` | `authorizedUpdaters[tokenId][ZA_OPERATOR_ADDR]` true and a delegation record exists at the backend |
+| `TEE-attested` (v0.4) | `LiveCertificate.get(tokenId).attestationHash != 0x0` |
+
+For v0.2, default to `Owner-operated` for any token with active live cert. Reserve the badge component slot in the agent detail page now; wire to backend lookup once `/paper/onboard` ships.
+
 ## v0.4 placeholders
 
 UI architecture should leave room for, but not yet implement:
