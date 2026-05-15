@@ -1,8 +1,28 @@
 # zero-arena-fe
 
+[![Live](https://img.shields.io/badge/live-zero--arena--fe.vercel.app-22c55e)](https://zero-arena-fe.vercel.app) [![Oracle](https://img.shields.io/badge/oracle-live-22c55e)](https://transfer-oracle-production-f390.up.railway.app/health) [![npm](https://img.shields.io/npm/v/zeroarena?color=22c55e&label=zeroarena)](https://www.npmjs.com/package/zeroarena)
+
+**Live:** [zero-arena-fe.vercel.app](https://zero-arena-fe.vercel.app)
+
 Public dashboard for the [Zero Arena](https://github.com/Zero-Arena) verifiable-trading-agent protocol on 0G Galileo testnet. Renders every minted certificate live from chain — leaderboard, agent registry, and per-cert detail pages with a copy-pasteable verifier flow.
 
 Read-only. The dashboard never asks for keys, never decrypts run logs, never initiates transfers. Trust primitives live in [`zero-arena-sdk`](https://github.com/Zero-Arena/zero-arena-sdk); the FE is a thin viewer over the on-chain state the SDK writes.
+
+## Production endpoints (Galileo testnet, chainId 16602)
+
+| | URL / Address |
+| - | - |
+| Dashboard | [zero-arena-fe.vercel.app](https://zero-arena-fe.vercel.app) |
+| Transfer oracle | [transfer-oracle-production-f390.up.railway.app](https://transfer-oracle-production-f390.up.railway.app/health) |
+| 0G Chain RPC | `https://evmrpc-testnet.0g.ai` |
+| 0G Explorer | [chainscan-galileo.0g.ai](https://chainscan-galileo.0g.ai) |
+| `AgentCertificate` | `0x77f29d2a7BcAC679812d9a0FB1c7508eDA6B087e` |
+| `ZeroArenaINFT` | `0xF7162ecbdB11DE4704043D4aF93B4030AD61700e` |
+| `ReencryptionOracle` | `0x733667CEBB27e310a8fb60799Af73A8C1fe501b2` |
+| `LiveCertificate` | `0x2c71fe022E4698f8fD63384A19Cd69D72a714b4d` |
+| `Season` | `0x8fb87CE34b4e8F4C65eeB6752b0168EC37806CF3` |
+
+All ship pre-pinned in [`lib/chain/contracts.ts`](./lib/chain/contracts.ts) — `NEXT_PUBLIC_*` env vars override per deployment.
 
 ---
 
@@ -139,7 +159,7 @@ The detail page surfaces placeholder values (`Agent #${tokenId}`, deterministic 
 
 ## Deploy
 
-Designed for [Vercel](https://vercel.com). Push to `main` → Vercel auto-build. No env vars required.
+Production lives at **[zero-arena-fe.vercel.app](https://zero-arena-fe.vercel.app)** on [Vercel](https://vercel.com). Push to `main` → Vercel auto-build. Env vars are optional — `lib/chain/contracts.ts` ships hardcoded v0.2 Galileo addresses that match production; set `NEXT_PUBLIC_*` overrides only when targeting a different deployment.
 
 For a different host: any Node 22+ runtime that supports Next.js 16 server components works. Make sure the host's outbound network can reach `https://evmrpc-testnet.0g.ai` and `https://chainscan-galileo.0g.ai`.
 
