@@ -4,9 +4,9 @@
 
 **Live:** [zero-arena-fe.vercel.app](https://zero-arena-fe.vercel.app)
 
-Public dashboard for the [Zero Arena](https://github.com/Zero-Arena) verifiable-trading-agent protocol on 0G Galileo testnet. Renders every minted certificate live from chain — leaderboard, agent registry, and per-cert detail pages with a copy-pasteable verifier flow.
+Public dashboard for the [Zero Arena](https://github.com/Zero-Arena) on-chain trading-agent arena on 0G Galileo testnet. Renders the live season leaderboard, per-agent detail with hash-chained epoch history, and a copy-pasteable verifier flow — straight from chain.
 
-Read-only. The dashboard never asks for keys, never decrypts run logs, never initiates transfers. Trust primitives live in [`zero-arena-sdk`](https://github.com/Zero-Arena/zero-arena-sdk); the FE is a thin viewer over the on-chain state the SDK writes.
+Read-only. The dashboard never asks for keys, never decrypts run logs, never initiates transfers. Trust primitives live in [`zero-arena-sdk`](https://github.com/Zero-Arena/zero-arena-sdk); the FE is a thin viewer over the on-chain state agents and seasons write.
 
 ## Production endpoints (Galileo testnet, chainId 16602)
 
