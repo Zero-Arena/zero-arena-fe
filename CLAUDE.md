@@ -55,7 +55,7 @@ Placeholder display values (e.g. `Agent #${tokenId}`, deterministic sparkline de
 
 If we need real strategy names before v0.4, do NOT ask owners for AES keys. Two correct architectural answers:
 
-1. **Public profile registry** (post-hackathon) — small contract or off-chain DB keyed by owner address; owners opt-in to publish a public display name + bio. Encrypted strategy stays encrypted; only marketing copy is public.
+1. **Public profile registry** (post-v0.2) — small contract or off-chain DB keyed by owner address; owners opt-in to publish a public display name + bio. Encrypted strategy stays encrypted; only marketing copy is public.
 2. **Public-metadata field at mint** — extend `ZeroArenaINFT.mint` to take optional `bytes publicMeta` of `(name, description)`. Backwards-compatible.
 
 Never decrypt encrypted metadata blobs on the FE under any circumstances.
