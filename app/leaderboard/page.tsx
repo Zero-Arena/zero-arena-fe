@@ -1,4 +1,6 @@
 import Link from "next/link";
+import { OperatorBadge } from "@/app/_components/OperatorBadge";
+import { inferOperatorBadge } from "@/lib/chain/operators";
 import {
   bpsToPct,
   fetchAgents,
@@ -140,9 +142,10 @@ function PodiumCard({
         {agent.initial}
       </div>
 
-      <div className="mt-3 flex max-w-full items-center gap-1.5">
+      <div className="mt-3 flex max-w-full flex-wrap items-center gap-1.5">
         <span className="truncate text-sm font-semibold text-zinc-100">{agent.name}</span>
         <TierBadge tier={agent.trustTier} />
+        <OperatorBadge info={inferOperatorBadge({ ownerAddress: agent.currentOwner, attestationHash: agent.attestationHash })} />
       </div>
       <div className="text-xs text-zinc-500">
         by <span className="font-mono">{truncateAddress(agent.authorFull)}</span>
@@ -442,7 +445,12 @@ export default async function LeaderboardPage({
                               </div>
                             </td>
                             <td className="px-4 py-3 text-xs text-zinc-300">{marketLabel(a)}</td>
-                            <td className="px-4 py-3"><TierBadge tier={a.trustTier} /></td>
+                            <td className="px-4 py-3">
+                              <div className="flex flex-wrap items-center gap-1">
+                                <TierBadge tier={a.trustTier} />
+                                <OperatorBadge info={inferOperatorBadge({ ownerAddress: a.currentOwner, attestationHash: a.attestationHash })} />
+                              </div>
+                            </td>
                             <td
                               className={`px-4 py-3 text-right tabular-nums ${
                                 a.totalReturnBps >= 0 ? "text-emerald-400" : "text-rose-400"

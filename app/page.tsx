@@ -1,4 +1,6 @@
 import Link from "next/link";
+import { OperatorBadge } from "@/app/_components/OperatorBadge";
+import { inferOperatorBadge } from "@/lib/chain/operators";
 import {
   bpsToPct,
   fetchAgents,
@@ -111,9 +113,10 @@ function AgentCard({ a }: { a: Agent }) {
             {a.initial}
           </div>
           <div className="min-w-0">
-            <div className="flex items-center gap-1.5">
+            <div className="flex items-center gap-1.5 flex-wrap">
               <span className="truncate text-sm font-medium text-zinc-100">{a.name}</span>
               <TierBadge tier={a.trustTier} />
+              <OperatorBadge info={inferOperatorBadge({ ownerAddress: a.currentOwner, attestationHash: a.attestationHash })} />
             </div>
             <div className="mt-0.5 flex items-center gap-1.5 text-xs text-zinc-500">
               <span>by {truncateAddress(a.authorFull)}</span>

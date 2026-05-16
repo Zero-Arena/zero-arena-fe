@@ -9,6 +9,8 @@ import { fetchAgent, bpsToPct, fmtPctSigned, fmtPctUnsigned, truncateAddress, tr
 import { readLiveRun } from "@/lib/chain/live";
 import { isDeployed, CONTRACTS } from "@/lib/chain/contracts";
 import { explorerUrl } from "@/lib/chain/galileo";
+import { inferOperatorBadge } from "@/lib/chain/operators";
+import { OperatorBadge } from "@/app/_components/OperatorBadge";
 
 export const revalidate = 60;
 
@@ -104,6 +106,10 @@ export default async function AgentLivePage({
                 {live.status === "active" && <span className="size-1.5 animate-pulse rounded-full bg-emerald-400" />}
                 {live.status === "active" ? "Live" : live.status === "stopped" ? "Stopped" : "Liquidated"}
               </span>
+              <OperatorBadge
+                info={inferOperatorBadge({ ownerAddress: agent.currentOwner, attestationHash: agent.attestationHash })}
+                size="md"
+              />
               <span className="text-zinc-500">
                 Started {fmtAge(live.startedAt)} · {live.epochCount} {live.epochCount === 1 ? "epoch" : "epochs"} committed · last update {fmtAge(live.lastUpdatedAt)}
               </span>
