@@ -8,7 +8,7 @@ import { notFound } from "next/navigation";
 import { fetchAgent, bpsToPct, fmtPctSigned, fmtPctUnsigned, truncateAddress, truncateHash } from "@/lib/agents";
 import { readLiveRun } from "@/lib/chain/live";
 import { isDeployed, CONTRACTS } from "@/lib/chain/contracts";
-import { explorerUrl } from "@/lib/chain/galileo";
+import { explorerUrl } from "@/lib/chain/zerog";
 import { inferOperatorBadge } from "@/lib/chain/operators";
 import { OperatorBadge } from "@/app/_components/OperatorBadge";
 
@@ -35,7 +35,7 @@ function NotStartedState({ slug, tokenId }: { slug: string; tokenId: string }) {
           No paper run started
         </div>
         <p className="mt-6 mx-auto max-w-md text-sm text-zinc-400">
-          This agent has a static certificate on Galileo but has not yet started a paper-trading run.
+          This agent has a static certificate on 0G mainnet but has not yet started a paper-trading run.
           Once the owner calls <code className="rounded bg-zinc-800 px-1.5 py-0.5 font-mono text-[11px] text-zinc-200">LiveCertificate.start(tokenId)</code>{" "}
           and the operator daemon starts feeding live bars, this page lights up with the cumulative hash chain.
         </p>
@@ -58,7 +58,7 @@ export default async function AgentLivePage({
   // LiveCertificate contract is the zero placeholder it falls back to
   // mock fixtures so the dashboard is demonstrable for hackathon judges.
   const live = await readLiveRun(tokenId);
-  const sourceLabel = isDeployed(CONTRACTS.LiveCertificate) ? "Galileo live" : "Demo data";
+  const sourceLabel = isDeployed(CONTRACTS.LiveCertificate) ? "Mainnet live" : "Demo data";
 
   if (!live) {
     return <NotStartedState slug={slug} tokenId={agent.tokenId.toString()} />;
@@ -89,12 +89,12 @@ export default async function AgentLivePage({
               <div className="text-xs text-zinc-500">Live paper-run dashboard</div>
               <span
                 className={`inline-flex items-center gap-1.5 rounded-md border px-1.5 py-0.5 text-[10px] font-medium ${
-                  sourceLabel === "Galileo live"
+                  sourceLabel === "Mainnet live"
                     ? "border-emerald-500/40 bg-emerald-500/10 text-emerald-300"
                     : "border-amber-500/40 bg-amber-500/10 text-amber-300"
                 }`}
               >
-                {sourceLabel === "Galileo live" && (
+                {sourceLabel === "Mainnet live" && (
                   <span className="size-1 animate-pulse rounded-full bg-emerald-400" />
                 )}
                 {sourceLabel}
@@ -186,7 +186,7 @@ export default async function AgentLivePage({
               rel="noreferrer"
               className="mt-4 inline-flex items-center gap-1.5 rounded-lg border border-zinc-700 bg-zinc-950/40 px-3 py-1.5 text-xs text-zinc-200 hover:border-zinc-600"
             >
-              View LiveCertificate on Galileo ↗
+              View LiveCertificate on 0G ↗
             </a>
           </div>
 

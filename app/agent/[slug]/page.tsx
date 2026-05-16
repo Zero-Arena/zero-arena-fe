@@ -14,7 +14,7 @@ import {
   type Agent,
   type TrustTier,
 } from "@/lib/agents";
-import { explorerUrl } from "@/lib/chain/galileo";
+import { explorerUrl } from "@/lib/chain/zerog";
 import { CONTRACTS } from "@/lib/chain/contracts";
 import { findDataset, formatWindow } from "@/lib/chain/datasets";
 import { inferOperatorBadge } from "@/lib/chain/operators";
@@ -385,7 +385,7 @@ export default async function AgentDetailPage({
               rel="noreferrer"
               className="mt-4 inline-flex items-center gap-1.5 rounded-lg border border-zinc-700 bg-zinc-950/40 px-3 py-1.5 text-xs text-zinc-200 hover:border-zinc-600"
             >
-              <ExternalIcon className="size-3" /> View AgentCertificate on Galileo
+              <ExternalIcon className="size-3" /> View AgentCertificate on 0G
             </a>
           </div>
 

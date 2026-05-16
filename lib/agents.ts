@@ -82,7 +82,7 @@ export const MARKET_INFO: Record<Market, { label: string }> = {
 };
 
 /**
- * Hand-written placeholder agents kept ONLY as a fallback when the Galileo
+ * Hand-written placeholder agents kept ONLY as a fallback when the 0G mainnet
  * RPC is unreachable or the AgentCertificate contract has zero entries. Real
  * data comes from `fetchAgents()` below — see CLAUDE.md 16 ("Public vs
  * private data — the rule"). The FE flags this set as demo data in the UI.
@@ -316,15 +316,15 @@ import {
 
 export interface FetchAgentsResult {
   agents: Agent[];
-  /** Where the data came from. UI can badge "Galileo Live" vs "Demo Data". */
+  /** Where the data came from. UI can badge "Mainnet live" vs "Demo Data". */
   source: "chain" | "mock";
 }
 
 /**
  * Read every on-chain certificate + iNFT mint and project them into the
- * `Agent` shape the FE renders. Falls back to {@link MOCK_AGENTS} if Galileo
- * RPC is unreachable or no certificates have been minted yet — never throws,
- * never blocks the page render.
+ * `Agent` shape the FE renders. Falls back to {@link MOCK_AGENTS} if the 0G
+ * mainnet RPC is unreachable or no certificates have been minted yet — never
+ * throws, never blocks the page render.
  */
 export async function fetchAgents(): Promise<FetchAgentsResult> {
   try {

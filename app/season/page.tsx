@@ -93,7 +93,7 @@ function EmptyState() {
         The <code className="rounded bg-zinc-800 px-1.5 py-0.5 font-mono text-[11px] text-zinc-200">Season</code> contract
         (live ranking + 50/30/20 prize payout) is written and tested in{" "}
         <code className="rounded bg-zinc-800 px-1.5 py-0.5 font-mono text-[11px] text-zinc-200">zero-arena-contracts</code>{" "}
-        but has not yet been deployed to Galileo. Once deployed, set{" "}
+        but has not yet been deployed to 0G mainnet. Once deployed, set{" "}
         <code className="rounded bg-zinc-800 px-1.5 py-0.5 font-mono text-[11px] text-zinc-200">
           NEXT_PUBLIC_SEASON_ADDRESS
         </code>{" "}
@@ -145,15 +145,15 @@ export default async function SeasonIndexPage() {
             </p>
           </div>
           <div className="flex items-center gap-2 text-xs text-zinc-400">
-            <span className="rounded-md border border-zinc-800 bg-zinc-900 px-2 py-1">Network: 0G Galileo Testnet</span>
+            <span className="rounded-md border border-zinc-800 bg-zinc-900 px-2 py-1">Network: 0G Mainnet</span>
             {deployed ? (
               <span className="inline-flex items-center gap-1.5 rounded-md border border-emerald-500/40 bg-emerald-500/10 px-2 py-1 text-emerald-300">
                 <span className="size-1.5 animate-pulse rounded-full bg-emerald-400" />
-                Galileo live
+                Mainnet live
               </span>
             ) : (
               <span
-                title="The Season contract has not yet been deployed to Galileo. These rows are deterministic placeholder data so the dashboard remains demonstrable."
+                title="The Season contract has not yet been deployed to 0G mainnet. These rows are deterministic placeholder data so the dashboard remains demonstrable."
                 className="inline-flex items-center gap-1.5 rounded-md border border-amber-500/40 bg-amber-500/10 px-2 py-1 text-amber-300"
               >
                 Demo data

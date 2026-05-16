@@ -14,7 +14,7 @@
 
 export const KNOWN_OPERATORS: Record<string, { name: string; href?: string }> = {
   // Wallet A — deployer + admin + the only currently authorized updater
-  // on Galileo. Same key drives the onboard service paper daemons.
+  // on 0G mainnet. Same key drives the onboard service paper daemons.
   '0xb1a5402e46d5360d46a9fe0807d3c927b3f50dbd': {
     name: 'Zero Arena',
     href: 'https://onboard-production-ed6c.up.railway.app/health',

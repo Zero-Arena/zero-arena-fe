@@ -18,7 +18,7 @@ import {
   useWriteContract,
 } from "wagmi";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
-import { galileo } from "@/lib/chain/galileo";
+import { zerog } from "@/lib/chain/zerog";
 import {
   CONTRACTS,
   SEASON_ABI,
@@ -54,7 +54,7 @@ export default function EnrollSeasonDialog({
     }
   }, [tokenIdStr]);
 
-  const wrongNetwork = isConnected && chainId !== galileo.id;
+  const wrongNetwork = isConnected && chainId !== zerog.id;
   const canQuery = !!tokenId && isConnected && !wrongNetwork;
 
   // Parallel preflight reads — auto-fire whenever tokenId becomes a valid bigint.
@@ -160,9 +160,9 @@ export default function EnrollSeasonDialog({
             </div>
           ) : wrongNetwork ? (
             <div>
-              <p className="text-zinc-400">Switch to Galileo (chain id {galileo.id}).</p>
+              <p className="text-zinc-400">Switch to 0G Mainnet (chain id {zerog.id}).</p>
               <button
-                onClick={() => switchChain({ chainId: galileo.id })}
+                onClick={() => switchChain({ chainId: zerog.id })}
                 disabled={switching}
                 className="mt-3 rounded-md bg-green-400 px-3 py-1.5 text-xs font-semibold text-zinc-900 hover:bg-green-300 disabled:opacity-60"
               >
@@ -235,7 +235,7 @@ export default function EnrollSeasonDialog({
                   Submitted ·{" "}
                   <a
                     className="underline"
-                    href={`${galileo.blockExplorers.default.url}/tx/${txHash}`}
+                    href={`${zerog.blockExplorers.default.url}/tx/${txHash}`}
                     target="_blank"
                     rel="noreferrer"
                   >

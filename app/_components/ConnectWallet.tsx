@@ -4,7 +4,7 @@
 // Coinbase Wallet via injection). Renders three states:
 //
 //   • Disconnected         → green "Connect Wallet" pill
-//   • Connected, Galileo   → "● Galileo · 0x1234…5678" with dropdown
+//   • Connected, 0G        → "● 0G Mainnet · 0x1234…5678" with dropdown
 //   • Connected, wrong net → "● Wrong network · 0x…" with one-click switch
 //
 // We do NOT wire mint / clone / faucet from here yet. Those are v0.2
@@ -20,7 +20,7 @@ import {
   useSwitchChain,
 } from "wagmi";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
-import { galileo } from "@/lib/chain/galileo";
+import { zerog } from "@/lib/chain/zerog";
 
 function truncate(addr: string): string {
   return `${addr.slice(0, 6)}…${addr.slice(-4)}`;
@@ -57,7 +57,7 @@ export default function ConnectWallet() {
     );
   }
 
-  const wrongNetwork = chainId !== galileo.id;
+  const wrongNetwork = chainId !== zerog.id;
 
   return (
     <div className="relative ml-auto" ref={menuRef}>
@@ -73,7 +73,7 @@ export default function ConnectWallet() {
         ) : (
           <span className="inline-flex items-center gap-1.5 text-emerald-300">
             <span className="size-1.5 animate-pulse rounded-full bg-emerald-400" />
-            Galileo
+            0G Mainnet
           </span>
         )}
         <span className="font-mono text-zinc-200">{truncate(address)}</span>
@@ -93,17 +93,17 @@ export default function ConnectWallet() {
           {wrongNetwork && (
             <button
               onClick={() => {
-                switchChain({ chainId: galileo.id });
+                switchChain({ chainId: zerog.id });
                 setOpen(false);
               }}
               disabled={isSwitching}
               className="block w-full px-3 py-2.5 text-left text-xs text-green-300 hover:bg-zinc-900 disabled:opacity-60"
             >
-              {isSwitching ? "Switching…" : "Switch to Galileo"}
+              {isSwitching ? "Switching…" : "Switch to 0G Mainnet"}
             </button>
           )}
           <a
-            href={`${galileo.blockExplorers.default.url}/address/${address}`}
+            href={`${zerog.blockExplorers.default.url}/address/${address}`}
             target="_blank"
             rel="noreferrer"
             onClick={() => setOpen(false)}

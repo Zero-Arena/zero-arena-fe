@@ -6,7 +6,7 @@
 // CLI/SDK). The FE only orchestrates: collect inputs, fetch sig, submit tx.
 
 import { CONTRACTS } from "@/lib/chain/contracts";
-import { galileo } from "@/lib/chain/galileo";
+import { zerog } from "@/lib/chain/zerog";
 
 const BASE_URL =
   process.env.NEXT_PUBLIC_TRANSFER_ORACLE_URL ??
@@ -62,7 +62,7 @@ export async function signTransferProof(
   opts?: { bearerToken?: string; signal?: AbortSignal },
 ): Promise<SignTransferProofResponse> {
   const body = {
-    chainId: galileo.id.toString(),
+    chainId: zerog.id.toString(),
     inftAddress: CONTRACTS.ZeroArenaINFT,
     tokenId: req.tokenId.toString(),
     from: req.from,

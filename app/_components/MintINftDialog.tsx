@@ -20,7 +20,7 @@ import {
   useWriteContract,
 } from "wagmi";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
-import { galileo } from "@/lib/chain/galileo";
+import { zerog } from "@/lib/chain/zerog";
 import { CONTRACTS, ZERO_ARENA_INFT_ABI } from "@/lib/chain/contracts";
 import {
   defaultDeadline,
@@ -76,7 +76,7 @@ export default function MintINftDialog({
   const [fetchingSig, setFetchingSig] = useState(false);
   const [oracleError, setOracleError] = useState<string | null>(null);
 
-  const wrongNetwork = isConnected && chainId !== galileo.id;
+  const wrongNetwork = isConnected && chainId !== zerog.id;
 
   const {
     writeContractAsync,
@@ -216,12 +216,12 @@ export default function MintINftDialog({
               </button>
             </Section>
           ) : wrongNetwork ? (
-            <Section title="Switch to Galileo testnet">
+            <Section title="Switch to 0G Mainnet">
               <p className="text-zinc-400">
-                The transfer happens on chain id {galileo.id}.
+                The transfer happens on chain id {zerog.id}.
               </p>
               <button
-                onClick={() => switchChain({ chainId: galileo.id })}
+                onClick={() => switchChain({ chainId: zerog.id })}
                 disabled={switching}
                 className="mt-3 rounded-md bg-green-400 px-3 py-1.5 text-xs font-semibold text-zinc-900 hover:bg-green-300 disabled:opacity-60"
               >
@@ -329,7 +329,7 @@ export default function MintINftDialog({
                     <KV k="from (owner)" v={currentOwner} />
                     <KV k="to (you)" v={address ?? "—"} />
                     <KV k="tokenId" v={tokenId.toString()} />
-                    <KV k="chainId" v={galileo.id.toString()} />
+                    <KV k="chainId" v={zerog.id.toString()} />
                   </div>
 
                   {oracleError && (
@@ -366,7 +366,7 @@ export default function MintINftDialog({
                       Submitted ·{" "}
                       <a
                         className="underline"
-                        href={`${galileo.blockExplorers.default.url}/tx/${txHash}`}
+                        href={`${zerog.blockExplorers.default.url}/tx/${txHash}`}
                         target="_blank"
                         rel="noreferrer"
                       >

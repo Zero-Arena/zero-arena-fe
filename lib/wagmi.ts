@@ -11,7 +11,7 @@
 
 import { http } from "wagmi";
 import { getDefaultConfig } from "@rainbow-me/rainbowkit";
-import { galileo } from "./chain/galileo";
+import { zerog } from "./chain/zerog";
 
 const projectId =
   process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID?.trim() ||
@@ -20,9 +20,9 @@ const projectId =
 export const wagmiConfig = getDefaultConfig({
   appName: "Zero Arena",
   projectId,
-  chains: [galileo],
+  chains: [zerog],
   transports: {
-    [galileo.id]: http(),
+    [zerog.id]: http(),
   },
   ssr: true,
 });

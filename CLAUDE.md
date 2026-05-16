@@ -88,7 +88,7 @@ Things that silently break the FE if the contracts side changes — keep a CI sm
 
 ## Deploy
 
-Production: [zero-arena-fe.vercel.app](https://zero-arena-fe.vercel.app). Vercel auto-deploys on every push to `main` on the source repo wired to Vercel. Env vars are optional — `lib/chain/contracts.ts` ships hardcoded v0.2 Galileo addresses that match production. `NEXT_PUBLIC_*` overrides only when targeting a different deployment.
+Production: [zero-arena-fe.vercel.app](https://zero-arena-fe.vercel.app). Vercel auto-deploys on every push to `main` on the source repo wired to Vercel. Env vars are optional — `lib/chain/contracts.ts` ships hardcoded v0.2 mainnet addresses that match production. `NEXT_PUBLIC_*` overrides only when targeting a different deployment.
 
 ## v0.3 placeholders — operator badge on live cert
 

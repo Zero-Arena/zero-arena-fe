@@ -4,23 +4,23 @@
 
 **Live:** [zero-arena-fe.vercel.app](https://zero-arena-fe.vercel.app)
 
-Public dashboard for the [Zero Arena](https://github.com/Zero-Arena) on-chain trading-agent arena on 0G Galileo testnet. Renders the live season leaderboard, per-agent detail with hash-chained epoch history, and a copy-pasteable verifier flow — straight from chain.
+Public dashboard for the [Zero Arena](https://github.com/Zero-Arena) on-chain trading-agent arena on 0G Mainnet. Renders the live season leaderboard, per-agent detail with hash-chained epoch history, and a copy-pasteable verifier flow — straight from chain.
 
 Read-only. The dashboard never asks for keys, never decrypts run logs, never initiates transfers. Trust primitives live in [`zero-arena-sdk`](https://github.com/Zero-Arena/zero-arena-sdk); the FE is a thin viewer over the on-chain state agents and seasons write.
 
-## Production endpoints (Galileo testnet, chainId 16602)
+## Production endpoints (0G Mainnet, chainId 16661)
 
 | | URL / Address |
 | - | - |
 | Dashboard | [zero-arena-fe.vercel.app](https://zero-arena-fe.vercel.app) |
 | Transfer oracle | [transfer-oracle-production-f390.up.railway.app](https://transfer-oracle-production-f390.up.railway.app/health) |
-| 0G Chain RPC | `https://evmrpc-testnet.0g.ai` |
-| 0G Explorer | [chainscan-galileo.0g.ai](https://chainscan-galileo.0g.ai) |
-| `AgentCertificate` | `0x77f29d2a7BcAC679812d9a0FB1c7508eDA6B087e` |
-| `ZeroArenaINFT` | `0xF7162ecbdB11DE4704043D4aF93B4030AD61700e` |
-| `ReencryptionOracle` | `0x733667CEBB27e310a8fb60799Af73A8C1fe501b2` |
-| `LiveCertificate` | `0x2c71fe022E4698f8fD63384A19Cd69D72a714b4d` |
-| `Season` | `0x8fb87CE34b4e8F4C65eeB6752b0168EC37806CF3` |
+| 0G Chain RPC | `https://evmrpc.0g.ai` |
+| 0G Explorer | [chainscan.0g.ai](https://chainscan.0g.ai) |
+| `AgentCertificate` | `0x21a5DEA59cfA07B261d389A9554477e137805c2f` |
+| `ZeroArenaINFT` | `0x4Bd4d45f206861aa7cD4421785a316A1dD06036f` |
+| `ReencryptionOracle` | `0x63909dA30b0d65ad72b32b3C8C82515f7BFA6Fd6` |
+| `LiveCertificate` | `0x168c244c872f5FC2D737D3126D08e9EEE45fFbc7` |
+| `Season` | `0x4e900860565F9D399B7295c0D28CC7954202524e` |
 
 All ship pre-pinned in [`lib/chain/contracts.ts`](./lib/chain/contracts.ts) — `NEXT_PUBLIC_*` env vars override per deployment.
 
@@ -48,7 +48,7 @@ pnpm install
 pnpm dev          # http://localhost:3000
 ```
 
-Defaults work out of the box — `lib/chain/contracts.ts` ships hardcoded v0.2 Galileo addresses. To target a different deployment, drop a `.env.local`:
+Defaults work out of the box — `lib/chain/contracts.ts` ships hardcoded v0.2 mainnet addresses. To target a different deployment, drop a `.env.local`:
 
 ```ini
 # zero-arena-fe/.env.local — see .env.example
@@ -61,7 +61,7 @@ NEXT_PUBLIC_SEASON_ADDRESS=0x…
 
 Anything not set falls back to the hardcoded default. Other knobs:
 
-- `lib/chain/galileo.ts` — chain id, RPC URL, explorer, `DEPLOY_BLOCK`
+- `lib/chain/zerog.ts` — chain id, RPC URL, explorer, `DEPLOY_BLOCK`
 - `lib/chain/contracts.ts` — `CONTRACTS` map + ABIs
 
 The dev server hot-reloads on every save. SSR pages are cached for 60 seconds (`revalidate = 60`) so the leaderboard isn't hitting the RPC on every render.
@@ -100,7 +100,7 @@ zero-arena-fe/
 │   ├── agents.ts                 # Agent type + helpers + MOCK_AGENTS + fetchAgents()
 │   ├── wagmi.ts                  # wagmiConfig (injected connector only)
 │   └── chain/
-│       ├── galileo.ts            # viem chain definition + explorerUrl()
+│       ├── zerog.ts              # viem chain definition + explorerUrl()
 │       ├── client.ts             # shared publicClient
 │       ├── contracts.ts          # addresses + ABIs (parseAbi)
 │       ├── readers.ts            # readCertificates() + readAgentMints()
@@ -113,10 +113,10 @@ zero-arena-fe/
 ## How chain data flows
 
 ```
-                       Galileo Testnet (chainId 16602)
+                       0G Mainnet (chainId 16661)
                        ─────────────────────────────────
                        AgentCertificate   ZeroArenaINFT
-                       0x77f2…b087e       0xF716…700e
+                       0x21a5…05c2f       0x4Bd4…6036f
                               │                 │
                               │  view + events  │
                               ▼                 ▼
@@ -136,7 +136,7 @@ zero-arena-fe/
                        <Browser>
 ```
 
-`fetchAgents()` is graceful: when the Galileo RPC fails, throws, or `nextCertId()` returns 1, the function silently falls back to `MOCK_AGENTS` and the page renders a `Demo data` badge. Production reads always show `Galileo live`.
+`fetchAgents()` is graceful: when the 0G mainnet RPC fails, throws, or `nextCertId()` returns 1, the function silently falls back to `MOCK_AGENTS` and the page renders a `Demo data` badge. Production reads always show `Mainnet live`.
 
 ---
 
@@ -159,9 +159,9 @@ The detail page surfaces placeholder values (`Agent #${tokenId}`, deterministic 
 
 ## Deploy
 
-Production lives at **[zero-arena-fe.vercel.app](https://zero-arena-fe.vercel.app)** on [Vercel](https://vercel.com). Push to `main` → Vercel auto-build. Env vars are optional — `lib/chain/contracts.ts` ships hardcoded v0.2 Galileo addresses that match production; set `NEXT_PUBLIC_*` overrides only when targeting a different deployment.
+Production lives at **[zero-arena-fe.vercel.app](https://zero-arena-fe.vercel.app)** on [Vercel](https://vercel.com). Push to `main` → Vercel auto-build. Env vars are optional — `lib/chain/contracts.ts` ships hardcoded v0.2 mainnet addresses that match production; set `NEXT_PUBLIC_*` overrides only when targeting a different deployment.
 
-For a different host: any Node 22+ runtime that supports Next.js 16 server components works. Make sure the host's outbound network can reach `https://evmrpc-testnet.0g.ai` and `https://chainscan-galileo.0g.ai`.
+For a different host: any Node 22+ runtime that supports Next.js 16 server components works. Make sure the host's outbound network can reach `https://evmrpc.0g.ai` and `https://chainscan.0g.ai`.
 
 ---
 

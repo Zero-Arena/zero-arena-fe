@@ -196,9 +196,9 @@ export async function readSeasonLeaderboard(seasonId: bigint): Promise<SeasonLea
 
 // ─── demo data ─────────────────────────────────────────────────────────
 // Render-time fallback when the v0.3 Season + LiveCertificate contracts
-// are not yet deployed to Galileo. Keeps the dashboard demonstrable for
-// hackathon judges; flagged as "Demo data" in the UI per CLAUDE.md 16.
-// Goes cold automatically once the real addresses are set.
+// are not yet deployed to 0G mainnet. Keeps the dashboard demonstrable;
+// flagged as "Demo data" in the UI per CLAUDE.md 16. Goes cold
+// automatically once the real addresses are set.
 
 const now = Math.floor(Date.now() / 1000);
 const DAY = 86_400;

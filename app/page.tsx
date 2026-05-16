@@ -219,14 +219,14 @@ export default async function AgentRegistryPage({
             </p>
           </div>
           <div className="flex items-center gap-2 text-xs text-zinc-400">
-            <span className="rounded-md border border-zinc-800 bg-zinc-900 px-2 py-1">Network: 0G Galileo Testnet</span>
+            <span className="rounded-md border border-zinc-800 bg-zinc-900 px-2 py-1">Network: 0G Mainnet</span>
             {source === "chain" ? (
               <span
-                title="Reading live AgentCertificate + ZeroArenaINFT state from Galileo RPC."
+                title="Reading live AgentCertificate + ZeroArenaINFT state from the 0G mainnet RPC."
                 className="inline-flex items-center gap-1.5 rounded-md border border-emerald-500/40 bg-emerald-500/10 px-2 py-1 text-emerald-300"
               >
                 <span className="size-1.5 animate-pulse rounded-full bg-emerald-400" />
-                Galileo live
+                Mainnet live
               </span>
             ) : (
               <span

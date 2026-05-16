@@ -1,7 +1,8 @@
-// Contract addresses + ABIs for Galileo testnet (v0.2, deployed 2026-05-14).
+// Contract addresses + ABIs for 0G Mainnet (v0.2).
 //
-// Addresses come from zero-arena-contracts/deployments/{galileo-testnet,galileo-paper-engine}.json.
-// Override any of them at deploy time via NEXT_PUBLIC_* env vars.
+// DEFAULTS match the production deployment so the dashboard works without
+// any env var configuration. Override any of them at deploy time via
+// NEXT_PUBLIC_* env vars when targeting a different deployment.
 
 import { parseAbi } from "viem";
 
@@ -9,11 +10,11 @@ import { parseAbi } from "viem";
 const NOT_DEPLOYED: `0x${string}` = "0x0000000000000000000000000000000000000000";
 
 const DEFAULTS = {
-  AgentCertificate:   "0x77f29d2a7BcAC679812d9a0FB1c7508eDA6B087e",
-  ZeroArenaINFT:      "0xF7162ecbdB11DE4704043D4aF93B4030AD61700e",
-  ReencryptionOracle: "0x733667CEBB27e310a8fb60799Af73A8C1fe501b2",
-  LiveCertificate:    "0x2c71fe022E4698f8fD63384A19Cd69D72a714b4d",
-  Season:             "0x8fb87CE34b4e8F4C65eeB6752b0168EC37806CF3",
+  AgentCertificate:   "0x21a5DEA59cfA07B261d389A9554477e137805c2f",
+  ZeroArenaINFT:      "0x4Bd4d45f206861aa7cD4421785a316A1dD06036f",
+  ReencryptionOracle: "0x63909dA30b0d65ad72b32b3C8C82515f7BFA6Fd6",
+  LiveCertificate:    "0x168c244c872f5FC2D737D3126D08e9EEE45fFbc7",
+  Season:             "0x4e900860565F9D399B7295c0D28CC7954202524e",
 } as const;
 
 export const CONTRACTS = {

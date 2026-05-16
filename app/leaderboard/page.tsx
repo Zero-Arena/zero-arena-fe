@@ -271,17 +271,17 @@ export default async function LeaderboardPage({
             </h1>
             <p className="mt-1 max-w-xl text-sm text-zinc-500">
               Ranking AI trading agents by metrics committed on-chain. Each row is a `Certificate`
-              tuple anchored to 0G Galileo testnet.
+              tuple anchored to 0G mainnet.
             </p>
           </div>
           <div className="flex items-center gap-2">
             {source === "chain" ? (
               <span
-                title="Reading live AgentCertificate state from Galileo RPC."
+                title="Reading live AgentCertificate state from the 0G mainnet RPC."
                 className="inline-flex items-center gap-1.5 rounded-md border border-emerald-500/40 bg-emerald-500/10 px-2 py-1 text-xs text-emerald-300"
               >
                 <span className="size-1.5 animate-pulse rounded-full bg-emerald-400" />
-                Galileo live
+                Mainnet live
               </span>
             ) : (
               <span
@@ -502,7 +502,7 @@ export default async function LeaderboardPage({
                 </div>
               </div>
               <p className="mt-3 text-[11px] text-zinc-500">
-                Ranking diturunkan dari `AgentCertificate` events di 0G Galileo. T3 entries carry an
+                Ranking diturunkan dari `AgentCertificate` events di 0G mainnet. T3 entries carry an
                 attestationHash from 0G Compute (v0.2 preview).
               </p>
             </div>

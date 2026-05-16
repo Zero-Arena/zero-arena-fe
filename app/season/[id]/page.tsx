@@ -139,7 +139,7 @@ function NotDeployedState({ seasonId }: { seasonId: bigint }) {
           Season contract not deployed
         </div>
         <p className="mt-6 mx-auto max-w-md text-sm text-zinc-400">
-          The Season contract has not yet been deployed to Galileo, so this page cannot read live state.
+          The Season contract has not yet been deployed to 0G mainnet, so this page cannot read live state.
           Once <code className="rounded bg-zinc-800 px-1.5 py-0.5 font-mono text-[11px]">NEXT_PUBLIC_SEASON_ADDRESS</code>{" "}
           is set, the leaderboard renders live.
         </p>
@@ -161,7 +161,7 @@ export default async function SeasonDetailPage({
 
   const entries = await readSeasonLeaderboard(seasonId);
   const status = statusOf(season);
-  const sourceLabel = isDeployed(CONTRACTS.Season) ? "Galileo live" : "Demo data";
+  const sourceLabel = isDeployed(CONTRACTS.Season) ? "Mainnet live" : "Demo data";
   const sourceTone = isDeployed(CONTRACTS.Season)
     ? "border-emerald-500/40 bg-emerald-500/10 text-emerald-300"
     : "border-amber-500/40 bg-amber-500/10 text-amber-300";
@@ -180,7 +180,7 @@ export default async function SeasonDetailPage({
             <div className="flex items-center gap-2">
               <h1 className="text-2xl font-bold tracking-tight">Season #{season.id.toString()}</h1>
               <span className={`inline-flex items-center gap-1.5 rounded-md border px-2 py-1 text-[10px] font-medium ${sourceTone}`}>
-                {sourceLabel === "Galileo live" && (
+                {sourceLabel === "Mainnet live" && (
                   <span className="size-1.5 animate-pulse rounded-full bg-emerald-400" />
                 )}
                 {sourceLabel}

@@ -1,4 +1,4 @@
-// Static snapshot of the canonical Galileo datasets, mirrored from
+// Static snapshot of the canonical 0G datasets, mirrored from
 // zero-arena-sdk/src/datasets.ts. Kept here so the FE doesn't need an npm
 // dep on `zeroarena` (per CLAUDE.md 16 — FE should not pull SDK into the
 // browser bundle). When zeroarena ships on npm we can swap this for the

@@ -1,4 +1,4 @@
-// Server-side readers — turn Galileo on-chain state into the `Agent` shape the
+// Server-side readers — turn 0G on-chain state into the `Agent` shape the
 // FE renders. Per CLAUDE.md 16 the FE is read-only; it never asks for keys
 // and never decrypts the run log. Encrypted fields (agent name, description,
 // trades) are surfaced as derived placeholders ("Agent #tokenId", etc).
@@ -15,7 +15,7 @@ import {
   marketFromByte,
   tierFromByte,
 } from "./contracts";
-import { DEPLOY_BLOCK } from "./galileo";
+import { DEPLOY_BLOCK } from "./zerog";
 
 export interface OnChainCertificate {
   certId: bigint;
@@ -104,8 +104,8 @@ export async function readCertificates(): Promise<OnChainCertificate[]> {
 
 /**
  * Read every minted iNFT by scanning AgentMinted events from the deploy
- * block. Event volume on Galileo testnet is small (≪ 1k per day), so a
- * single getLogs call is fine for v0.1.
+ * block. Event volume on 0G mainnet is small (≪ 1k per day) at v0.2 traffic,
+ * so a single getLogs call is fine.
  */
 export async function readAgentMints(): Promise<OnChainAgentMint[]> {
   const logs = await publicClient.getContractEvents({

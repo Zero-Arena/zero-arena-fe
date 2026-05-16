@@ -23,7 +23,7 @@ import {
   useWriteContract,
 } from "wagmi";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
-import { galileo } from "@/lib/chain/galileo";
+import { zerog } from "@/lib/chain/zerog";
 import { CONTRACTS, LIVE_CERTIFICATE_ABI } from "@/lib/chain/contracts";
 import {
   fetchOnboardHealth,
@@ -76,7 +76,7 @@ export default function DelegateAgentDialog({
   const { switchChain, isPending: switching } = useSwitchChain();
 
   const configured = isOnboardConfigured();
-  const wrongNetwork = isConnected && chainId !== galileo.id;
+  const wrongNetwork = isConnected && chainId !== zerog.id;
   const isOwner =
     !!address && address.toLowerCase() === currentOwner.toLowerCase();
 
@@ -271,10 +271,10 @@ export default function DelegateAgentDialog({
             />
           ) : wrongNetwork ? (
             <SimplePrompt
-              text={`Switch to Galileo (chain id ${galileo.id}).`}
+              text={`Switch to 0G Mainnet (chain id ${zerog.id}).`}
               button="Switch network"
               busy={switching}
-              onClick={() => switchChain({ chainId: galileo.id })}
+              onClick={() => switchChain({ chainId: zerog.id })}
             />
           ) : !isOwner ? (
             <p className="rounded-md border border-rose-500/40 bg-rose-500/10 px-3 py-2 text-[11px] text-rose-300">
@@ -400,7 +400,7 @@ export default function DelegateAgentDialog({
                       Auth tx ·{" "}
                       <a
                         className="underline"
-                        href={`${galileo.blockExplorers.default.url}/tx/${authTxHash}`}
+                        href={`${zerog.blockExplorers.default.url}/tx/${authTxHash}`}
                         target="_blank"
                         rel="noreferrer"
                       >

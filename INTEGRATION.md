@@ -1,6 +1,6 @@
 # BE Integration — Quick Reference for FE
 
-Single source of truth for **what the FE wires up where**. All three BE services + the on-chain reads. Galileo testnet (chainId 16602).
+Single source of truth for **what the FE wires up where**. All three BE services + the on-chain reads. 0G Mainnet (chainId 16661).
 
 ---
 
@@ -180,8 +180,8 @@ Rate limit: 30 signs/minute per IP. Optional `Authorization: Bearer <token>`.
 
 ```ts
 {
-  chainId: "16602",                         // decimal string
-  inftAddress: "0xF7162ecbdB11DE4704043D4aF93B4030AD61700e",
+  chainId: "16661",                         // decimal string
+  inftAddress: "0x4Bd4d45f206861aa7cD4421785a316A1dD06036f",
   tokenId: "12",                            // decimal string
   from: "0x...",                            // current owner
   to: "0x...",                              // new owner
@@ -215,23 +215,23 @@ SDK (`zeroarena`) has a `HttpOracleClient` helper that does steps 1–3 — the 
 
 ## 5. Season settlement
 
-**No FE work.** A keeper daemon (`zero-arena-bacend/src/season/keeper.ts`) monitors `endTime` for all live seasons on Galileo and calls `Season.settle(seasonId, rankedTokenIds)` permissionlessly. FE just polls `Season.seasons(id).settled` and re-reads on flip.
+**No FE work.** A keeper daemon (`zero-arena-bacend/src/season/keeper.ts`) monitors `endTime` for all live seasons on 0G mainnet and calls `Season.settle(seasonId, rankedTokenIds)` permissionlessly. FE just polls `Season.seasons(id).settled` and re-reads on flip.
 
 If you want a "Settle now" button (anyone-can-call), wire it directly to `Season.settle()` with the ranked list — but the keeper handles it within ~30s of `endTime` so usually not needed.
 
 ---
 
-## Contract addresses (Galileo, chainId 16602)
+## Contract addresses (0G Mainnet, chainId 16661)
 
 ```ts
-AgentCertificate    0x77f29d2a7BcAC679812d9a0FB1c7508eDA6B087e
-ZeroArenaINFT       0xF7162ecbdB11DE4704043D4aF93B4030AD61700e
-ReencryptionOracle  0x733667CEBB27e310a8fb60799Af73A8C1fe501b2
-LiveCertificate     0x2c71fe022E4698f8fD63384A19Cd69D72a714b4d
-Season              0x8fb87CE34b4e8F4C65eeB6752b0168EC37806CF3
+AgentCertificate    0x21a5DEA59cfA07B261d389A9554477e137805c2f
+ZeroArenaINFT       0x4Bd4d45f206861aa7cD4421785a316A1dD06036f
+ReencryptionOracle  0x63909dA30b0d65ad72b32b3C8C82515f7BFA6Fd6
+LiveCertificate     0x168c244c872f5FC2D737D3126D08e9EEE45fFbc7
+Season              0x4e900860565F9D399B7295c0D28CC7954202524e
 ```
 
-RPC: `https://evmrpc-testnet.0g.ai` · Explorer: `https://chainscan-galileo.0g.ai`
+RPC: `https://evmrpc.0g.ai` · Explorer: `https://chainscan.0g.ai`
 
 ---
 

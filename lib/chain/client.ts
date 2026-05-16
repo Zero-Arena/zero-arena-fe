@@ -6,14 +6,14 @@
 // not this publicClient directly.
 
 import { createPublicClient, http } from "viem";
-import { galileo } from "./galileo";
+import { zerog } from "./zerog";
 
 /**
- * Single shared publicClient for server-side fetches. The Galileo RPC is
+ * Single shared publicClient for server-side fetches. The 0G mainnet RPC is
  * generous enough that we don't need per-request clients or multicall
  * batching at v0.1 traffic levels.
  */
 export const publicClient = createPublicClient({
-  chain: galileo,
+  chain: zerog,
   transport: http(),
 });
