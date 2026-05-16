@@ -17,7 +17,9 @@ import {
 import { explorerUrl } from "@/lib/chain/galileo";
 import { CONTRACTS } from "@/lib/chain/contracts";
 import { findDataset, formatWindow } from "@/lib/chain/datasets";
+import { inferOperatorBadge } from "@/lib/chain/operators";
 import CopyButton from "@/app/_components/CopyButton";
+import { OperatorBadge } from "@/app/_components/OperatorBadge";
 import PerformanceChart from "./PerformanceChart";
 
 export const revalidate = 60;
@@ -226,6 +228,10 @@ export default async function AgentDetailPage({
               {a.strategyClass}
             </span>
             <TrustTierCard tier={a.trustTier} />
+            <OperatorBadge
+              info={inferOperatorBadge({ ownerAddress: a.currentOwner, attestationHash: a.attestationHash })}
+              size="md"
+            />
           </div>
           <div className="flex items-center gap-2 text-zinc-300">
             <button className="inline-flex items-center gap-1.5 rounded-lg border border-zinc-800 bg-zinc-900 px-2.5 py-1.5 text-xs hover:border-zinc-700">
