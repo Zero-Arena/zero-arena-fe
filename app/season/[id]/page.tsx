@@ -8,13 +8,12 @@ import { notFound } from "next/navigation";
 import {
   readSeason,
   readSeasonLeaderboard,
-  type LiveRun,
-  type SeasonLeaderboardEntry,
   type SeasonSummary,
 } from "@/lib/chain/live";
 import { isDeployed, CONTRACTS } from "@/lib/chain/contracts";
-import { bpsToPct, fmtPctSigned, fmtPctUnsigned, truncateAddress } from "@/lib/agents";
+import { truncateAddress } from "@/lib/agents";
 import EnrollSeasonButton from "@/app/_components/EnrollSeasonButton";
+import LeaderboardTable from "./LeaderboardTable";
 
 export const revalidate = 60;
 
@@ -41,70 +40,6 @@ function statusOf(s: SeasonSummary): { label: string; tone: "live" | "scheduled"
   if (s.startTime > now) return { label: `Starts in ${fmtCountdown(s.startTime)}`, tone: "scheduled" };
   if (s.endTime > now) return { label: `Ends in ${fmtCountdown(s.endTime)}`, tone: "live" };
   return { label: "Awaiting settlement", tone: "ended" };
-}
-
-function RankBadge({ rank }: { rank: number }) {
-  const styles =
-    rank === 1
-      ? "bg-green-400 text-zinc-900"
-      : rank === 2
-        ? "bg-zinc-300 text-zinc-900"
-        : rank === 3
-          ? "bg-amber-700 text-zinc-50"
-          : "bg-zinc-800 text-zinc-400";
-  return (
-    <span className={`inline-flex size-7 items-center justify-center rounded-full text-xs font-bold ${styles}`}>
-      {rank}
-    </span>
-  );
-}
-
-function LeaderboardRow({ entry, rank }: { entry: SeasonLeaderboardEntry; rank: number }) {
-  const r: LiveRun | null = entry.run;
-  const ret = r ? bpsToPct(r.liveTotalReturnBps) : null;
-  const sharpe = r ? r.liveSharpeX1000 / 1000 : null;
-  const ddPct = r ? bpsToPct(r.liveMaxDrawdownBps) : null;
-  const winPct = r ? bpsToPct(r.liveWinRateBps) : null;
-
-  const statusLabel = r
-    ? r.status === "active"
-      ? "Live"
-      : r.status === "stopped"
-        ? "Stopped"
-        : "Liquidated"
-    : "Not started";
-  const statusTone = r?.status === "liquidated"
-    ? "text-rose-400"
-    : r?.status === "active"
-      ? "text-emerald-300"
-      : "text-zinc-500";
-
-  return (
-    <tr className="transition hover:bg-zinc-900">
-      <td className="px-4 py-3"><RankBadge rank={rank} /></td>
-      <td className="px-4 py-3">
-        <Link href={`/agent/${entry.slug}/live`} className="text-sm font-medium text-zinc-100 hover:text-green-300">
-          {entry.name}
-        </Link>
-      </td>
-      <td className={`px-4 py-3 text-xs ${statusTone}`}>{statusLabel}</td>
-      <td className={`px-4 py-3 text-right tabular-nums ${ret === null ? "text-zinc-600" : ret >= 0 ? "text-emerald-400" : "text-rose-400"}`}>
-        {ret === null ? "—" : fmtPctSigned(ret)}
-      </td>
-      <td className="px-4 py-3 text-right tabular-nums text-zinc-200">
-        {sharpe === null ? "—" : sharpe.toFixed(2)}
-      </td>
-      <td className="px-4 py-3 text-right tabular-nums text-zinc-200">
-        {winPct === null ? "—" : fmtPctUnsigned(winPct)}
-      </td>
-      <td className="px-4 py-3 text-right tabular-nums text-rose-400">
-        {ddPct === null ? "—" : `−${fmtPctUnsigned(ddPct)}`}
-      </td>
-      <td className="px-4 py-3 text-right tabular-nums text-zinc-400">
-        {r ? r.epochCount : 0}
-      </td>
-    </tr>
-  );
 }
 
 function EmptyLeaderboard({ seasonId }: { seasonId: bigint }) {
@@ -252,27 +187,7 @@ export default async function SeasonDetailPage({
         {entries.length === 0 ? (
           <EmptyLeaderboard seasonId={seasonId} />
         ) : (
-          <div className="mt-8 overflow-hidden rounded-2xl border border-zinc-800/80 bg-zinc-900/40">
-            <table className="w-full text-left text-sm">
-              <thead className="bg-zinc-900/60 text-[11px] uppercase tracking-wider text-zinc-500">
-                <tr>
-                  <th className="px-4 py-3 font-medium">#</th>
-                  <th className="px-4 py-3 font-medium">Agent</th>
-                  <th className="px-4 py-3 font-medium">Status</th>
-                  <th className="px-4 py-3 text-right font-medium">Live Return</th>
-                  <th className="px-4 py-3 text-right font-medium">Sharpe</th>
-                  <th className="px-4 py-3 text-right font-medium">Win Rate</th>
-                  <th className="px-4 py-3 text-right font-medium">Max DD</th>
-                  <th className="px-4 py-3 text-right font-medium">Epochs</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-zinc-800/60">
-                {entries.map((e, i) => (
-                  <LeaderboardRow key={e.tokenId.toString()} entry={e} rank={i + 1} />
-                ))}
-              </tbody>
-            </table>
-          </div>
+          <LeaderboardTable entries={entries} />
         )}
       </div>
     </div>
