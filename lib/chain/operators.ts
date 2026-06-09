@@ -1,21 +1,21 @@
-// Known operator wallets — addresses that have been globally added to
-// `LiveCertificate.authorizedUpdaters` by the contract admin. Used to
-// label live-cert badges.
+// Known operator wallets — the operator addresses Zero Arena publishes for
+// owners to delegate to. Used to label live-cert badges.
 //
-// Why a static map: per-token operator attribution is NOT recorded
-// on-chain (LiveCertificate.update() emits no msg.sender), and the
-// authorizedUpdaters mapping is global rather than per-token. So the
-// FE shows "trust badge by intent": for each iNFT, what trust path
-// applies given (a) who owns the token and (b) which operators are
-// publicly trusted.
+// Why a static map: per-token operator attribution is NOT recorded in the
+// EpochCommitted event (LiveCertificate.update() emits no msg.sender). Post-H2
+// `authorizedUpdaters` IS per-token on-chain (keyed by (tokenId, operator)),
+// but the event still doesn't say which operator signed a given epoch — so the
+// FE shows "trust badge by intent": for each iNFT, what trust path applies
+// given (a) who owns the token and (b) which operators are publicly trusted.
 //
 // When the registry of known operators changes, update this map. Future
-// improvement: read authorizedUpdaters from chain and overlay.
+// improvement: read authorizedUpdaters(tokenId, op) from chain and overlay.
 
 export const KNOWN_OPERATORS: Record<string, { name: string; href?: string }> = {
-  // Wallet A — deployer + admin + the only currently authorized updater
-  // on 0G mainnet. Same key drives the onboard service paper daemons.
-  '0xb1a5402e46d5360d46a9fe0807d3c927b3f50dbd': {
+  // Dedicated ZA operator hot wallet (separated from the deployer/admin in
+  // the C3 key rotation, 2026-06-10). Owners delegate to it per-token via
+  // authorizeUpdater(tokenId, operator, true).
+  '0x0dce34908552ac7348a99820cc97f437e98c1654': {
     name: 'Zero Arena',
     href: 'https://onboard-production-ed6c.up.railway.app/health',
   },
@@ -63,11 +63,11 @@ export function inferOperatorBadge(opts: {
   if (known) {
     // Owner == known operator: this is operator-attested by default
     // (e.g. Zero Arena admin-owned tokens drive themselves through the
-    // operator wallet that is in authorizedUpdaters globally).
+    // operator wallet the owner authorized per-token via authorizeUpdater).
     return {
       kind: 'operator-attested',
       label: `Operator: ${known.name}`,
-      tooltip: `Live-cert epochs signed by ${known.name}'s operator wallet (admin-authorized in LiveCertificate.authorizedUpdaters). Trust = ${known.name}'s public reputation.`,
+      tooltip: `Live-cert epochs signed by ${known.name}'s operator wallet (owner-authorized per-token in LiveCertificate.authorizedUpdaters). Trust = ${known.name}'s public reputation.`,
       href: known.href,
     };
   }

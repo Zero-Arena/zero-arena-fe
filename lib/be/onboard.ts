@@ -39,6 +39,17 @@ export interface OnboardPayload {
   tokenId: string;
   nonce: string;
   deadline: string;
+  // Present iff action === "onboard" — binds the run to the owner's signature (H4).
+  agentHash?: Hex; // 0x keccak256(utf8(agent source plaintext))
+  genesisHash?: Hex;
+  symbol?: string;
+  interval?: string;
+  market?: "spot" | "perp";
+  barsPerEpoch?: string;
+  initialBalance?: string;
+  leverage?: string;
+  feeBps?: string;
+  slippageBps?: string;
 }
 
 export type AgentSource =
@@ -48,16 +59,9 @@ export type AgentSource =
 export interface OnboardRequest {
   payload: OnboardPayload;
   signature: Hex;
+  // Run params now live INSIDE the signed payload; the body carries only the
+  // opaque agent bytes whose keccak the BE checks against payload.agentHash.
   agentSource: AgentSource;
-  genesisHash: Hex;
-  symbol?: string;
-  interval?: string;
-  market?: "spot" | "perp";
-  barsPerEpoch?: number;
-  initialBalance?: number;
-  leverage?: number;
-  feeBps?: number;
-  slippageBps?: number;
 }
 
 export interface OnboardResponse {
@@ -193,15 +197,14 @@ export function newPayload(
   };
 }
 
-/** The message string passed to personal_sign / EIP-191. INTEGRATION.md
- * doesn't specify a canonical encoding; we use deterministic JSON with the
- * field order shown in the doc. If the BE rejects on signature recovery,
- * align this with the BE's verification side. */
+/** The message passed to personal_sign / EIP-191. Canonical JSON: sorted keys,
+ * no whitespace, every value coerced to a string, `undefined` dropped. MUST
+ * stay byte-for-byte identical to the BE's `digestFor()` (zero-arena-be
+ * onboard/auth.ts) and the SDK's `digestForOnboard()`. */
 export function payloadToSigningString(p: OnboardPayload): string {
-  return JSON.stringify({
-    action: p.action,
-    tokenId: p.tokenId,
-    nonce: p.nonce,
-    deadline: p.deadline,
-  });
+  const obj: Record<string, string> = {};
+  for (const [k, v] of Object.entries(p)) {
+    if (v !== undefined && v !== null) obj[k] = String(v);
+  }
+  return JSON.stringify(obj, Object.keys(obj).sort());
 }

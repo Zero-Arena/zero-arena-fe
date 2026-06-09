@@ -23,6 +23,7 @@ import {
   useWriteContract,
 } from "wagmi";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
+import { keccak256, stringToBytes } from "viem";
 import { zerog } from "@/lib/chain/zerog";
 import { CONTRACTS, LIVE_CERTIFICATE_ABI } from "@/lib/chain/contracts";
 import {
@@ -175,20 +176,27 @@ export default function DelegateAgentDialog({
     setOnboardResult(null);
     setSubmitting(true);
     try {
-      const payload = newPayload("onboard", tokenId);
+      const src = agentSource.trim();
+      // H4: bind the agent code + every run param into the signed payload.
+      const payload = {
+        ...newPayload("onboard", tokenId),
+        agentHash: keccak256(stringToBytes(src)),
+        genesisHash,
+        symbol: symbol.toLowerCase(),
+        interval,
+        market,
+        // Defaults bound into the signature (FE form doesn't expose these yet).
+        barsPerEpoch: "96",
+        initialBalance: "10000",
+        leverage: "1",
+        feeBps: "10",
+        slippageBps: "5",
+      };
       const signature = (await signMessageAsync({
         message: payloadToSigningString(payload),
       })) as Hex;
 
-      const res = await postOnboard({
-        payload,
-        signature,
-        agentSource: agentSource.trim(),
-        genesisHash,
-        symbol,
-        interval,
-        market,
-      });
+      const res = await postOnboard({ payload, signature, agentSource: src });
       setOnboardResult(res);
       refetchStatus();
     } catch (e) {

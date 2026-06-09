@@ -27,6 +27,9 @@ export interface SignTransferProofRequest {
   to: Address;
   sealedKeyHash: Bytes32;
   newMetadataHash: Bytes32;
+  /** Per-token transfer nonce — must equal ZeroArenaINFT.transferNonce(tokenId)
+   *  at submit time. Bound into the proof to prevent replay (M3). */
+  nonce: bigint;
   /** Unix seconds. Defaults to now + 5 min when omitted at call site. */
   deadline: bigint;
 }
@@ -69,6 +72,7 @@ export async function signTransferProof(
     to: req.to,
     sealedKeyHash: req.sealedKeyHash,
     newMetadataHash: req.newMetadataHash,
+    nonce: req.nonce.toString(),
     deadline: req.deadline.toString(),
   };
 

@@ -16,6 +16,7 @@ import { isHex } from "viem";
 import {
   useAccount,
   useChainId,
+  useReadContract,
   useSwitchChain,
   useWriteContract,
 } from "wagmi";
@@ -105,12 +106,25 @@ export default function MintINftDialog({
   const canFetchSig =
     isConnected && !wrongNetwork && sealedHashValid && metaHashValid && deadlineFormatValid;
 
+  // Read the current per-token transfer nonce — the proof must bind it (M3).
+  const { data: transferNonce } = useReadContract({
+    address: CONTRACTS.ZeroArenaINFT,
+    abi: ZERO_ARENA_INFT_ABI,
+    functionName: "transferNonce",
+    args: [tokenId],
+    query: { enabled: isConnected && !wrongNetwork },
+  });
+
   const fetchSignature = useCallback(async () => {
     if (!address) return;
     const nowSec = BigInt(Math.floor(Date.now() / 1000));
     const deadline = BigInt(deadlineSec);
     if (deadline <= nowSec) {
       setOracleError("deadline is in the past — set it to a future unix-seconds value");
+      return;
+    }
+    if (transferNonce === undefined) {
+      setOracleError("couldn't read the on-chain transfer nonce yet — try again in a moment");
       return;
     }
     setFetchingSig(true);
@@ -123,6 +137,7 @@ export default function MintINftDialog({
         to: address,
         sealedKeyHash: sealedKeyHash as Bytes32,
         newMetadataHash: newMetadataHash as Bytes32,
+        nonce: transferNonce as bigint,
         deadline,
       });
       setOracleSig(signature);
@@ -136,7 +151,7 @@ export default function MintINftDialog({
     } finally {
       setFetchingSig(false);
     }
-  }, [address, currentOwner, deadlineSec, newMetadataHash, sealedKeyHash, tokenId]);
+  }, [address, currentOwner, deadlineSec, newMetadataHash, sealedKeyHash, tokenId, transferNonce]);
 
   const submitTx = useCallback(async () => {
     if (!address || !oracleSig) return;
